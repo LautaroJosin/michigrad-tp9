@@ -63,6 +63,38 @@ class Value:
 
         return out
 
+    # (e^(2x) - 1) / (e^(2x) + 1)
+    def tanh(self):
+        x = self.data
+
+        aux = (math.exp(2*x) - 1) / (math.exp(2*x) + 1)
+        
+        out = Value(aux, (self, ), 'tanh')
+
+        # Calcula la derivada de la función definida, en este caso 1 - tanh(x)^2
+        def _backward():
+            self.grad += (1 - out**2) * out.grad 
+
+        out._backward = _backward
+        return out
+
+    # 1 / (1 + e⁽-x))
+    def sigmoid(self):
+        x = self.data
+        
+        try:
+            s = 1 / (1 + math.exp(-x))
+            out = Value(s, (self, ), 'sigmoid')
+        except OverflowError:
+            s = 0 if x < 0 else 1 
+
+        # Calcula la derivada de la función definida, en este caso s * (1 - s)
+        def _backward():
+            self.grad += ( s * (1 - s) ) * out.grad
+
+        out._backward = _backward
+        return out
+        
 
     def backward(self):
 
