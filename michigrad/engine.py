@@ -73,7 +73,7 @@ class Value:
 
         # Calcula la derivada de la función definida, en este caso 1 - tanh(x)^2
         def _backward():
-            self.grad += (1 - out**2) * out.grad 
+            self.grad += (1 - out.data**2) * out.grad 
 
         out._backward = _backward
         return out
